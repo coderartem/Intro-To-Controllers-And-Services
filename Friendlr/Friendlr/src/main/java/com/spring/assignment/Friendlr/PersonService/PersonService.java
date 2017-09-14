@@ -81,6 +81,13 @@ public class PersonService {
 		}else return null;
 	}
 	
+	public PersonDto getThatFriend(Long id, Long buddyId) {
+		if(personAndFriendExist(id, buddyId)){
+			return getThatPerson(buddyId);
+		}
+		return null;
+	}
+	
 	public Set<PersonDto> addFriendToThatPerson(Long id, Long buddyId) {
 		if(getPersonEntity(buddyId)!=null && getPersonEntity(id)!=null){
 		getPersonEntity(id).setBuddies(getPersonEntity(buddyId));
