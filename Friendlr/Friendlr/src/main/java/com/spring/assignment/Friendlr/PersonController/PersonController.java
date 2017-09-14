@@ -85,6 +85,15 @@ public class PersonController {
 		return personsList;
 	}
 	
+	@GetMapping("{id}/buddies/{buddyId}")
+	public PersonDto GetThatFriend(@PathVariable Long id, @PathVariable Long buddyId, HttpServletResponse response){
+		PersonDto person = personService.getThatFriend(id, buddyId);
+		if(person==null){
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}
+		return person;
+	}
+	
 	@DeleteMapping("{id}/buddies/{buddyId}")
 	public Set<PersonDto> deleteFriend(@PathVariable Long id, @PathVariable Long buddyId, HttpServletResponse response){
 		Set<PersonDto> personsList = personService.deleteFromFriendsList(id,buddyId);
