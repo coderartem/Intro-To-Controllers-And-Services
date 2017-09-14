@@ -1,34 +1,23 @@
-package com.spring.assignment.Friendlr.Person;
+package com.spring.assignment.Friendlr.PersonDto;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class Person {
-
+public class PersonDto {
+	
+	
+	
 	private Long ID;
 	private String firstName;
 	private String lastName;
-	private Set<Person> buddies = new HashSet<>();
 		
 	
-	public Person(Long iD, String firstName, String lastName, Set<Person> buddies) {
+	public PersonDto(Long iD, String firstName, String lastName) {
 		super();
 		this.ID = iD;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.buddies = buddies;
 	}
 	
-	public Person() {
+	public PersonDto() {
 		super();
-	}
-
-	public Set<Person> getBuddies() {
-		return buddies;
-	}
-
-	public void setBuddies(Person friend) {
-		buddies.add(friend);
 	}
 
 	public Long getID() {
@@ -49,4 +38,5 @@ public class Person {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
 }
