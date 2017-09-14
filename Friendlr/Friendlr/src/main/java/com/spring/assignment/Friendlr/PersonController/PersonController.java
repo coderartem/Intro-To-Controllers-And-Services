@@ -68,12 +68,25 @@ public class PersonController {
 	}
 	
 	@PostMapping("{id}/buddies/{buddyId}")
-	public Set<PersonDto> friends(@PathVariable Long id, @PathVariable Long buddyId){
+	public Set<PersonDto> friends(@PathVariable Long id, @PathVariable Long buddyId, HttpServletResponse response){
+		Set<PersonDto> personsList = personService.addFriendToThatPerson(id, buddyId);
+		if(personsList==null){
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}
 		return personService.addFriendToThatPerson(id, buddyId);
 	}
 	
 	@GetMapping("{id}/buddies")
 	public Set<PersonDto> getBuddies(@PathVariable Long id){
 		return personService.getFriends(id);
+	}
+	
+	@DeleteMapping("{id}/buddies/{buddyId}")
+	public Set<PersonDto> deleteFriend(@PathVariable Long id, @PathVariable Long buddyId, HttpServletResponse response){
+		Set<PersonDto> personsList = personService.deleteFromFriendsList(id,buddyId);
+		if(personsList==null){
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}
+		return personsList;
 	}
 }
