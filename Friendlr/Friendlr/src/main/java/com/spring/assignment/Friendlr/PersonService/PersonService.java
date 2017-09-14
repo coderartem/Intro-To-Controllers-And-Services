@@ -58,23 +58,37 @@ public class PersonService {
 			if(persons.removeIf(p->p.getID().equals(id))){
 					person.setID(id);
 					persons.add(personMapper.toPerson(person));	
+					for(Person prsn : persons){
+						prsn.getBuddies().removeIf(p->p.getID().equals(id));
+						prsn.setBuddies(personMapper.toPerson(person));
+					}
 				return convertPersonsToPersonsDto(persons);
 			}
 		return null;
 	}
 	
 	public Set<PersonDto> deletePerson(Long id) {
-		return persons.removeIf(p->p.getID().equals(id))?convertPersonsToPersonsDto(persons):null;
+		if(!persons.removeIf(p->p.getID().equals(id))){return null;}
+		for(Person person : persons){
+			person.getBuddies().removeIf(p->p.getID().equals(id));
+		}
+		return convertPersonsToPersonsDto(persons);
 	}
 	
 	public Set<PersonDto> getFriends(Long id) {
-		Set<Person> friendsOfThatGuy = getPersonEntity(id).getBuddies();
-		return convertPersonsToPersonsDto(friendsOfThatGuy);
+		return convertPersonsToPersonsDto(getPersonEntity(id).getBuddies());
 	}
 	
 	public Set<PersonDto> addFriendToThatPerson(Long id, Long buddyId) {
+		if(getPersonEntity(buddyId)!=null){
 		getPersonEntity(id).setBuddies(getPersonEntity(buddyId));
-	return convertPersonsToPersonsDto(persons);
+	return convertPersonsToPersonsDto(getPersonEntity(id).getBuddies());
+	}else return null;
+	}
+	
+	public Set<PersonDto> deleteFromFriendsList(Long id, Long buddyId) {
+		if(getPersonEntity(id)==null) return null;
+		return getPersonEntity(id).getBuddies().removeIf(f->f.getID().equals(buddyId))?convertPersonsToPersonsDto(getPersonEntity(id).getBuddies()):null;
 	}
 	
 	public Set<PersonDto> convertPersonsToPersonsDto(Set<Person> persons){
