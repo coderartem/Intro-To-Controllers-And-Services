@@ -31,12 +31,7 @@ public class PersonService {
 	}
 
 	public PersonDto getThatPerson(Long id) {
-		for(Person person : persons){
-			if(person.getID().equals(id)){
-				return personMapper.toPersonDto(person);
-			}
-		}
-		return null;
+		return personMapper.toPersonDto(getPersonEntity(id));
 	}
 	
 	//This method add friends to Person
@@ -55,56 +50,55 @@ public class PersonService {
 	}
 
 	public Set<PersonDto> updatePerson(Long id, PersonDto person) {
-			if(persons.removeIf(p->p.getID().equals(id))){
-					person.setID(id);
-					persons.add(personMapper.toPerson(person));	
-					for(Person prsn : persons){
-						prsn.getBuddies().removeIf(p->p.getID().equals(id));
-						prsn.setBuddies(personMapper.toPerson(person));
-					}
-				return convertPersonsToPersonsDto(persons);
+		if(existanceCheck(id)){
+			for(Person prsn : persons){
+				if(prsn.getID().equals(id)){
+						prsn.setFirstName(person.getFirstName());
+						prsn.setLastName(person.getLastName());
+					return convertPersonsToPersonsDto(persons);
+				}
 			}
-		return null;
+		} return null;
 	}
 	
 	public Set<PersonDto> deletePerson(Long id) {
 		if(!persons.removeIf(p->p.getID().equals(id))){return null;}
-		for(Person person : persons){
-			person.getBuddies().removeIf(p->p.getID().equals(id));
-		}
+			for(Person person : persons){
+				person.getBuddies().removeIf(p->p.getID().equals(id));
+			}
 		return convertPersonsToPersonsDto(persons);
 	}
 	
 	public Set<PersonDto> getFriends(Long id) {
-		if(getPersonEntity(id)!=null){
+		if(existanceCheck(id)){
 			return convertPersonsToPersonsDto(getPersonEntity(id).getBuddies());
 		}else return null;
 	}
 	
 	public PersonDto getThatFriend(Long id, Long buddyId) {
-		if(personAndFriendExist(id, buddyId)){
+		if(existanceCheck(id) && existanceCheck(buddyId)){
 			return getThatPerson(buddyId);
 		}
 		return null;
 	}
 	
 	public Set<PersonDto> addFriendToThatPerson(Long id, Long buddyId) {
-		if(getPersonEntity(buddyId)!=null && getPersonEntity(id)!=null){
-		getPersonEntity(id).setBuddies(getPersonEntity(buddyId));
-		getPersonEntity(buddyId).setBuddies(getPersonEntity(id));
-	return convertPersonsToPersonsDto(getPersonEntity(id).getBuddies());
+		if(existanceCheck(buddyId) && existanceCheck(id)){
+				getPersonEntity(id).setBuddies(getPersonEntity(buddyId));
+				getPersonEntity(buddyId).setBuddies(getPersonEntity(id));
+			return convertPersonsToPersonsDto(getPersonEntity(id).getBuddies());
 	}else return null;
 	}
 	
 	public Set<PersonDto> deleteFromFriendsList(Long id, Long buddyId) {
-		if(getPersonEntity(id)==null) {return null;}
+		if(!existanceCheck(id)) {return null;}
 		return (getPersonEntity(id).getBuddies().removeIf(f->f.getID().equals(buddyId)) 
 				&& getPersonEntity(buddyId).getBuddies().removeIf(f->f.getID().equals(id)))
 				?convertPersonsToPersonsDto(getPersonEntity(id).getBuddies()):null;
 	}
 	
 	public Set<PersonDto> updateFriend(Long id, Long buddyId, PersonDto person) {
-		if(personAndFriendExist(id, buddyId)){
+		if(existanceCheck(id) && existanceCheck(buddyId)){
 			updatePerson(buddyId,person);
 			return convertPersonsToPersonsDto(getPersonEntity(id).getBuddies());
 		}else return null;
@@ -114,7 +108,7 @@ public class PersonService {
 		return persons.stream().map(personMapper::toPersonDto).collect(Collectors.toSet());
 	}
 
-	public boolean personAndFriendExist(Long id, Long buddyId){
-		return (getPersonEntity(id)!=null && getPersonEntity(buddyId)!=null)?true:false;
+	public boolean existanceCheck(Long id){
+		return (getPersonEntity(id)!=null)?true:false;
 	}
 }
