@@ -80,8 +80,9 @@ public class PersonService {
 	}
 	
 	public Set<PersonDto> addFriendToThatPerson(Long id, Long buddyId) {
-		if(getPersonEntity(buddyId)!=null){
+		if(getPersonEntity(buddyId)!=null && getPersonEntity(id)!=null){
 		getPersonEntity(id).setBuddies(getPersonEntity(buddyId));
+		getPersonEntity(buddyId).setBuddies(getPersonEntity(id));
 	return convertPersonsToPersonsDto(getPersonEntity(id).getBuddies());
 	}else return null;
 	}
